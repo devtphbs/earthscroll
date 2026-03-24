@@ -45,7 +45,7 @@ export function PlaceCard({
       setDragOffset(0)
       setIsDragging(false)
     },
-    onTap: () => {
+    onClick: () => {
       const currentTime = new Date().getTime()
       const tapLength = currentTime - lastTap
       if (tapLength < 500 && tapLength > 0) {
