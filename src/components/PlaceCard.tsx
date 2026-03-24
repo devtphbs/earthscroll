@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { Place } from '@/data/places'
 import { motion } from 'framer-motion'
-import { useGesture } from 'react-use-gesture'
+import { useGesture } from '@use-gesture/react'
 
 interface PlaceCardProps {
   place: Place
