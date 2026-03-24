@@ -2,8 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { Place } from '@/data/places'
-import { motion } from 'framer-motion'
-import { useGesture } from '@use-gesture/react'
+import { motion, PanInfo } from 'framer-motion'
 
 interface PlaceCardProps {
   place: Place
@@ -29,31 +28,27 @@ export function PlaceCard({
   const cardRef = useRef<HTMLDivElement>(null)
   let lastTap = 0
 
-  const bind = useGesture({
-    onDrag: ({ offset: [x], down }) => {
-      setDragOffset(x)
-      setIsDragging(down)
-    },
-    onDragEnd: ({ offset: [x], velocity: [vx] }) => {
-      if (Math.abs(x) > 100 || Math.abs(vx) > 0.5) {
-        if (x > 0) {
-          onSwipeRight()
-        } else {
-          onSwipeLeft()
-        }
+  const handleDragEnd = (event: any, info: PanInfo) => {
+    const { offset, velocity } = info
+    if (Math.abs(offset.x) > 100 || Math.abs(velocity.x) > 500) {
+      if (offset.x > 0) {
+        onSwipeRight()
+      } else {
+        onSwipeLeft()
       }
-      setDragOffset(0)
-      setIsDragging(false)
-    },
-    onClick: () => {
-      const currentTime = new Date().getTime()
-      const tapLength = currentTime - lastTap
-      if (tapLength < 500 && tapLength > 0) {
-        onDoubleTap()
-      }
-      lastTap = currentTime
     }
-  })
+    setDragOffset(0)
+    setIsDragging(false)
+  }
+
+  const handleTap = () => {
+    const currentTime = new Date().getTime()
+    const tapLength = currentTime - lastTap
+    if (tapLength < 500 && tapLength > 0) {
+      onDoubleTap()
+    }
+    lastTap = currentTime
+  }
 
   const getCategoryColor = (category: string) => {
     switch (category) {
@@ -83,7 +78,6 @@ export function PlaceCard({
   return (
     <motion.div
       ref={cardRef}
-      {...bind()}
       className="absolute inset-0 flex items-center justify-center p-4"
       initial={{ scale: 0.9, opacity: 0 }}
       animate={{ 
@@ -94,6 +88,15 @@ export function PlaceCard({
         transition: { type: 'spring', stiffness: 300, damping: 30 }
       }}
       exit={{ scale: 0.9, opacity: 0 }}
+      drag="x"
+      dragConstraints={{ left: 0, right: 0 }}
+      dragElastic={0.2}
+      onDrag={(_, info) => {
+        setDragOffset(info.offset.x)
+        setIsDragging(true)
+      }}
+      onDragEnd={handleDragEnd}
+      onTap={handleTap}
     >
       <div className="relative w-full h-full max-w-md max-h-[80vh] rounded-2xl overflow-hidden">
         {/* Background Image */}
