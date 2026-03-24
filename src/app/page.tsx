@@ -110,7 +110,7 @@ export default function Home() {
       
       <BottomNav 
         currentScreen={currentScreen}
-        onScreenChange={setCurrentScreen}
+        onScreenChange={(screen) => setCurrentScreen(screen)}
         user={user}
         isPremium={isPremium}
       />
